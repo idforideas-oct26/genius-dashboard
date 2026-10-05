@@ -7,12 +7,12 @@ export default defineConfig({
     proxy: {
       '/api/budget': {
         target: 'http://localhost:8080',
-        rewrite: path => path.replace(/^\/api\/budget/, ''),
+        rewrite: path => path.replace(/^\/api\/budget/, '/api'),
         changeOrigin: true
       },
       '/api/crm': {
         target: 'http://localhost:3000',
-        rewrite: path => path.replace(/^\/api\/crm/, ''),
+        rewrite: path => path.replace(/^\/api\/crm/, '/api'),
         changeOrigin: true
       }
     }
