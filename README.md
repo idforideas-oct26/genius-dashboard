@@ -26,8 +26,8 @@ SueñoSimple tiene campañas activas de distintos tipos (Meta Ads, email, influe
 
 - Node.js 18 o superior
 - npm 9 o superior
-- [Budget Manager](../budget-manager) corriendo en `localhost:8080`
-- [Landing CRM](../landing-crm) corriendo en `localhost:3000`
+- [Budget Manager](../genius-budget-manager) corriendo en `localhost:8080`
+- [Landing CRM](../genius-crm) corriendo en `localhost:3000`
 
 El Dashboard consume ambas APIs a través de un proxy de Vite configurado en `vite.config.js`. No requiere base de datos ni variables de entorno adicionales.
 
@@ -47,6 +47,27 @@ El panel abre en `http://localhost:5173`.
 
 Para que los datos sean reales, tener Budget Manager y Landing CRM corriendo antes de abrir el Dashboard. Si alguna API no está disponible, el panel muestra `—` en las métricas que dependen de ella sin romper la pantalla.
 
+### Levantar todo el ecosistema con un solo comando
+
+```bash
+npm run dev:all
+```
+
+El script `scripts/dev-all.sh` levanta Budget Manager, Landing CRM y el Dashboard en una sola terminal. Requiere que los tres repositorios estén clonados lado a lado:
+
+```
+genius-budget-manager/
+genius-crm/
+genius-dashboard/
+```
+
+- Si el puerto `8080` o `3000` ya está en uso, el script reutiliza esa instancia en lugar de levantar otra.
+- Espera a que ambas APIs respondan antes de iniciar el Dashboard.
+- Los logs de cada servicio aparecen con el prefijo `[budget]` o `[crm]`.
+- `Ctrl+C` detiene todos los servicios que inició el script.
+
+Landing CRM y el Dashboard recargan solos al cambiar el código. Budget Manager no: si estás trabajando en él, levantarlo en otra terminal con `mvn spring-boot:run` y después correr `npm run dev:all`. El script lo reutiliza, así podés reiniciarlo por separado y `Ctrl+C` no lo detiene.
+
 ## Cómo navegar el panel
 
 1. Abrir `http://localhost:5173` en el navegador.
@@ -65,6 +86,8 @@ genius-dashboard/
 ├── index.html                    Punto de entrada HTML (Vite)
 ├── vite.config.js                Configuración de Vite y proxy hacia las APIs
 ├── package.json
+├── scripts/
+│   └── dev-all.sh                Levanta las dos APIs y el Dashboard juntos
 ├── src/
 │   ├── main.jsx                  Monta la app en el DOM
 │   ├── App.jsx                   Routing principal (react-router-dom)
@@ -87,8 +110,8 @@ El archivo `vite.config.js` configura un proxy para evitar errores de CORS en de
 
 | Prefijo en el frontend | Destino real |
 |------------------------|--------------|
-| `/api/budget/*` | `http://localhost:8080/*` |
-| `/api/crm/*` | `http://localhost:3000/*` |
+| `/api/budget/*` | `http://localhost:8080/api/*` |
+| `/api/crm/*` | `http://localhost:3000/api/*` |
 
 Las llamadas a la API se hacen siempre con el prefijo (`/api/budget/campaigns`, `/api/crm/landings`) y Vite se encarga de redirigirlas. No hay que cambiar nada para que funcione.
 
