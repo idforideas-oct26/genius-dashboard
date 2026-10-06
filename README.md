@@ -53,20 +53,38 @@ Para que los datos sean reales, tener Budget Manager y Landing CRM corriendo ant
 npm run dev:all
 ```
 
-El script `scripts/dev-all.sh` levanta Budget Manager, Landing CRM y el Dashboard en una sola terminal. Requiere que los tres repositorios estén clonados lado a lado:
+El script `scripts/dev-all.sh` levanta Budget Manager, Landing CRM, el admin PHP de Landings y el Dashboard en una sola terminal. Requiere que los repositorios estén clonados lado a lado:
 
 ```
 genius-budget-manager/
 genius-crm/
 genius-dashboard/
+genius-landings/
 ```
 
 - Si el puerto `8080` o `3000` ya está en uso, el script reutiliza esa instancia en lugar de levantar otra.
 - Espera a que ambas APIs respondan antes de iniciar el Dashboard.
-- Los logs de cada servicio aparecen con el prefijo `[budget]` o `[crm]`.
-- `Ctrl+C` detiene todos los servicios que inició el script.
+- El admin PHP (`localhost:8000/admin/`) es opcional: si PHP no está instalado o falta `genius-landings`, el script lo omite y levanta el resto.
+- Los logs de cada servicio aparecen con el prefijo `[budget]`, `[crm]` o `[landings]`.
+- `Ctrl+C` detiene todos los servicios que inició el script y muestra el estado de cada puerto (`libre` o `sigue corriendo`).
 
 Landing CRM y el Dashboard recargan solos al cambiar el código. Budget Manager no: si estás trabajando en él, levantarlo en otra terminal con `mvn spring-boot:run` y después correr `npm run dev:all`. El script lo reutiliza, así podés reiniciarlo por separado y `Ctrl+C` no lo detiene.
+
+### Ver qué servicios están corriendo
+
+```bash
+npm run status:all
+```
+
+Muestra el estado de cada puerto (`8080`, `3000`, `8000`, `5173`): si está libre o activo, qué proceso lo ocupa y si el servicio responde. No detiene nada.
+
+### Detener todos los servicios
+
+```bash
+npm run stop:all
+```
+
+Detiene lo que esté escuchando en los puertos `8080`, `3000`, `5173` y `8000`, lo haya iniciado `dev:all` o no. Útil si quedó algún proceso colgado ocupando un puerto. Si un proceso no cierra en 5 segundos, lo fuerza.
 
 ## Cómo navegar el panel
 
@@ -87,7 +105,9 @@ genius-dashboard/
 ├── vite.config.js                Configuración de Vite y proxy hacia las APIs
 ├── package.json
 ├── scripts/
-│   └── dev-all.sh                Levanta las dos APIs y el Dashboard juntos
+│   ├── dev-all.sh                Levanta las APIs, el admin PHP y el Dashboard juntos
+│   ├── status-all.sh             Muestra qué servicios están corriendo
+│   └── stop-all.sh               Detiene todo lo que ocupe los puertos del ecosistema
 ├── src/
 │   ├── main.jsx                  Monta la app en el DOM
 │   ├── App.jsx                   Routing principal (react-router-dom)

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:all": "bash scripts/dev-all.sh",
+    "stop:all": "bash scripts/stop-all.sh",
+    "status:all": "bash scripts/status-all.sh",
     "build": "vite build",
     "preview": "vite preview"
   },
